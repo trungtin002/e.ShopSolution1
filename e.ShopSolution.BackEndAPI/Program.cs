@@ -1,6 +1,10 @@
 ﻿using e.ShopSolution.Application.Catalog;
+using e.ShopSolution.Application.System.Users;
 using e.ShopSolution.Data.EF;
+using e.ShopSolution.Data.Entities;
 using eShopSolution.Application.Common;
+using eShopSolution.Application.System.Users;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -15,10 +19,19 @@ builder.Services.AddDbContext<EShopDbContext>(options =>
     // Chuỗi DataContext: Là chuỗi trong file Json: appsettings.Development (
     options.UseSqlServer(builder.Configuration.GetConnectionString("eShopSolutionDb"));
 });
+//add indentity
+builder.Services.AddIdentity<AppUser, AppRole>()
+    .AddEntityFrameworkStores<EShopDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddTransient<IPublicProductService, PublicProductService>();
 builder.Services.AddTransient<IManageProductService, ManageProductService>();
 builder.Services.AddTransient<IStorageService, FileStorageService>();
+
+builder.Services.AddTransient<UserManager<AppUser>, UserManager<AppUser>>();
+builder.Services.AddTransient<SignInManager<AppUser>, SignInManager<AppUser>>();
+builder.Services.AddTransient<RoleManager<AppRole>, RoleManager<AppRole>>();
+builder.Services.AddTransient<IUserService, UserService>();
 
 
 builder.Services.AddSwaggerGen(options =>
