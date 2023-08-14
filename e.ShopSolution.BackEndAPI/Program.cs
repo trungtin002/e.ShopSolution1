@@ -1,6 +1,8 @@
 ﻿using e.ShopSolution.Application.Catalog;
 using e.ShopSolution.Data.EF;
+using eShopSolution.Application.Common;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +17,19 @@ builder.Services.AddDbContext<EShopDbContext>(options =>
 });
 
 builder.Services.AddTransient<IPublicProductService, PublicProductService>();
+builder.Services.AddTransient<IManageProductService, ManageProductService>();
+builder.Services.AddTransient<IStorageService, FileStorageService>();
 
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "eShopSolution",
+       
+    });
+});
 
 
 
@@ -36,6 +50,14 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+
+//
+
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger Base Project");
+});
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
