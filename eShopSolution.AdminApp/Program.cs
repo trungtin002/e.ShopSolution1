@@ -1,6 +1,7 @@
 using eShopSolution.AdminApp.Services;
 using eShopSolution.ViewModels.System.Users;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,15 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddHttpClient();
+
+//Authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath ="/User/Login/";
+        options.AccessDeniedPath = "/User/Forbidden/";
+    });
+
 builder.Services.AddTransient<IUserApiClient, UserApiClient>();
 
 
@@ -27,7 +37,11 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     //app.UseHsts();
 }
+app.UseAuthentication();
 
+
+app.MapRazorPages();
+app.MapDefaultControllerRoute();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
